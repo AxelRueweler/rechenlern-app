@@ -266,7 +266,7 @@ screens.home = () => {
     <div class="tiles">
       <button class="tile t-1x1" data-go="mult">
         <span class="emoji">✖️</span>
-        <span><span class="title">Einmaleins</span><br><span class="desc">${typeof masteredCount === 'function' ? masteredCount(p) : 0} von 100 Aufgaben gemeistert</span></span>
+        <span><span class="title">Einmaleins</span><br><span class="desc">${typeof masteredCount === 'function' ? `${masteredCount(p)} von ${MULT_TOTAL} gemeistert · ${practicedCount(p)} geübt` : ''}</span></span>
       </button>
       <button class="tile t-frac" data-go="frac">
         <span class="emoji">🍕</span>

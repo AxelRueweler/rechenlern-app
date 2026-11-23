@@ -11,11 +11,31 @@
 const MULT_ROWS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const SESSION_LEN = 10;
 const BLITZ_SECONDS = 60;
-const MASTERED_STREAK = 3;
+const MASTERED_STREAK = 2;   // so oft hintereinander richtig = gemeistert
+// 7 · 8 und 8 · 7 sind dieselbe Aufgabe: 55 verschiedene Aufgaben
+const MULT_FACTS = [];
+MULT_ROWS.forEach((a) => MULT_ROWS.forEach((b) => { if (a <= b) MULT_FACTS.push([a, b]); }));
+const MULT_TOTAL = MULT_FACTS.length;
 
 /* ---------- Statistik ---------- */
 
-function factKey(a, b) { return a + 'x' + b; }
+function factKey(a, b) { return Math.min(a, b) + 'x' + Math.max(a, b); }
+
+// Alte Statistik (7x8 und 8x7 getrennt) einmalig zusammenführen
+function migrateMultStats(p) {
+  if (!p.stats || !p.stats.mult || p.stats.multV === 2) return false;
+  const merged = {};
+  for (const [k, st] of Object.entries(p.stats.mult)) {
+    const [a, b] = k.split('x').map(Number);
+    const key = factKey(a, b);
+    const m = merged[key];
+    merged[key] = m ? { c: m.c + st.c, w: m.w + st.w, s: Math.max(m.s, st.s), t: Math.max(m.t || 0, st.t || 0) } : { ...st };
+  }
+  p.stats.mult = merged;
+  p.stats.multV = 2;
+  return true;
+}
+if (state.data.profiles.map(migrateMultStats).some(Boolean)) save();
 
 function factStat(p, a, b) {
   return p.stats.mult[factKey(a, b)] || { c: 0, w: 0, s: 0 };
@@ -41,11 +61,10 @@ function rowStars(p, a) {
   return 0;
 }
 
-function masteredCount(p) {
-  let n = 0;
-  MULT_ROWS.forEach((a) => MULT_ROWS.forEach((b) => { if (isMastered(p, a, b)) n++; }));
-  return n;
-}
+function masteredCount(p) { return MULT_FACTS.filter(([a, b]) => isMastered(p, a, b)).length; }
+
+// Aufgaben, die schon mindestens einmal drankamen
+function practicedCount(p) { return MULT_FACTS.filter(([a, b]) => { const st = factStat(p, a, b); return st.c + st.w > 0; }).length; }
 
 // Gewicht: neue und oft falsche Aufgaben häufiger, gemeisterte selten
 function factWeight(p, a, b) {
@@ -111,7 +130,7 @@ const BADGES = {
   blitz15: { icon: '⚡', name: 'Blitz 15' },
   blitz25: { icon: '🌩️', name: 'Blitz 25' },
   row: { icon: '🥇', name: 'Erste Reihe gemeistert' },
-  half: { icon: '🧠', name: '50 Aufgaben gemeistert' },
+  half: { icon: '🧠', name: 'Die Hälfte gemeistert' },
   all: { icon: '👑', name: 'Einmaleins-König' }
 };
 
@@ -160,7 +179,7 @@ screens.mult = () => {
     <div class="panel">
       <div class="row-head">
         <h2 style="margin:0">Reihen üben</h2>
-        <span class="muted small">${masteredCount(p)} von 100 gemeistert</span>
+        <span class="muted small">${masteredCount(p)} von ${MULT_TOTAL} gemeistert · ${practicedCount(p)} geübt</span>
       </div>
       <div class="rows-grid" id="rows">
         ${MULT_ROWS.map((a) => `
@@ -335,8 +354,8 @@ screens.multPlay = () => {
     if (mode === 'blitz' && s.correct >= 25) nb.push(award(p, 'blitz25'));
     if (MULT_ROWS.some((a) => rowStars(p, a) === 3)) nb.push(award(p, 'row'));
     const m = masteredCount(p);
-    if (m >= 50) nb.push(award(p, 'half'));
-    if (m === 100) nb.push(award(p, 'all'));
+    if (m >= Math.ceil(MULT_TOTAL / 2)) nb.push(award(p, 'half'));
+    if (m === MULT_TOTAL) nb.push(award(p, 'all'));
     save();
 
     state.screen = 'multDone';

@@ -70,7 +70,7 @@ Fehlende Felder bedeuten den Standardwert.
 
 ```
 stats: {
-  mult: {                         // Einmaleins, ein Eintrag pro Aufgabe "a x b"
+  mult: {                         // Einmaleins, ein Eintrag pro Aufgabe, kleinere Zahl zuerst
     "7x8": { c: 5, w: 1, s: 3, t: 1763900000000 }
   },
   frac: {                         // Brüche, ein Eintrag pro Thema
@@ -84,11 +84,11 @@ stats: {
 |---|---|
 | `c` | richtig beantwortet |
 | `w` | falsch beantwortet |
-| `s` | richtig in Folge. Ab 3 gilt die Aufgabe als gemeistert |
+| `s` | richtig in Folge. Ab 2 gilt die Aufgabe als gemeistert |
 | `t` | Zeitpunkt der letzten Antwort (Millisekunden) |
 | `best` | bestes Rundenergebnis in Prozent. Daraus werden die ★ berechnet |
 
-Geteilt-Aufgaben (z. B. 56 : 7) zählen bei der passenden Mal-Aufgabe (`7x8`) mit.
+7 · 8 und 8 · 7 sind dieselbe Aufgabe (`7x8`), es gibt also 55 Aufgaben. Geteilt-Aufgaben (56 : 7 und 56 : 8) zählen ebenfalls bei `7x8` mit. `stats.multV: 2` zeigt, dass ältere getrennte Einträge (`8x7`) schon zusammengeführt wurden.
 
 Themen-IDs der Brüche: `erkennen`, `faerben`, `vergleichen`, `plus-gleich` (Einstieg) sowie `erweitern`, `kuerzen`, `vergleichen2`, `plusminus`, `mal`, `geteilt`, `gemischt`, `dezimal` (ab Klasse 5).
 

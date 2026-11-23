@@ -247,3 +247,30 @@ test('Belohnungs-Avatare und Sterne-Konto', async () => {
 test('Keine Fehler in der Konsole', () => {
   assert.deepEqual(page.errors, []);
 });
+
+test('Einmaleins gemeistert: 7·8 und 8·7 zählen zusammen, 2× richtig reicht', async () => {
+  const r = await run(() => {
+    const p = { stats: { mult: {} } };
+    recordFact(p, 7, 8, true);
+    const after1 = masteredCount(p);
+    recordFact(p, 8, 7, true);              // andere Reihenfolge, gleiche Aufgabe
+    const after2 = masteredCount(p);
+    recordFact(p, 56 / 8, 8, false);        // Fehler setzt zurück
+    const afterWrong = masteredCount(p);
+    return { total: MULT_TOTAL, after1, after2, afterWrong, practiced: practicedCount(p), keys: Object.keys(p.stats.mult) };
+  });
+  assert.deepEqual(r, { total: 55, after1: 0, after2: 1, afterWrong: 0, practiced: 1, keys: ['7x8'] });
+});
+
+test('Einmaleins: alte getrennte Statistik wird zusammengeführt', async () => {
+  const r = await run(() => {
+    const p = { stats: { mult: { '8x7': { c: 2, w: 1, s: 2, t: 5 }, '7x8': { c: 3, w: 0, s: 1, t: 9 }, '3x3': { c: 1, w: 0, s: 1, t: 1 } } } };
+    const changed = migrateMultStats(p);
+    const again = migrateMultStats(p);
+    return { changed, again, mult: p.stats.mult, m: masteredCount(p) };
+  });
+  assert.equal(r.changed, true);
+  assert.equal(r.again, false);
+  assert.deepEqual(r.mult, { '7x8': { c: 5, w: 1, s: 2, t: 9 }, '3x3': { c: 1, w: 0, s: 1, t: 1 } });
+  assert.equal(r.m, 1);
+});
