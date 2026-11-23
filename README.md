@@ -9,6 +9,7 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Einmaleins: Reihen üben, „Mix“ (schwierige Aufgaben kommen öfter), 60-Sekunden-Blitzrunde, optional Geteilt-Aufgaben
 - Sterne, Serien und Abzeichen
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
+- Teilen mit Rest (Klasse 3 und 4), z. B. 17 : 5 = 3 Rest 2, mit Erklärung bei Fehlern
 - Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
 - Tagesziel (im Eltern-Bereich einstellbar) und Tages-Streak mit Wochenleiste
 - Fortschrittsseite: Kalender der letzten 4 Wochen, Einmaleins-Tafel, Bruch-Themen, alle Abzeichen
@@ -28,6 +29,7 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `index.html` | Einstiegsseite |
 | `app.js` | Profile, Speichern, Navigation, Eltern-Bereich |
 | `mult.js` | Einmaleins-Modul |
+| `rest.js` | Teilen mit Rest |
 | `frac.js` | Bruchrechnen-Modul |
 | `progress.js` | Tagesziel, Streak und Fortschrittsseite |
 | `styles.css` | Gestaltung (hell/dunkel, Touch-optimiert) |

@@ -149,6 +149,12 @@ screens.mult = () => {
         <span class="title">Blitzrunde</span>
         <span class="desc">${BLITZ_SECONDS} Sekunden. Rekord: <b>${best}</b></span>
       </button>
+      ${p.grade >= 3 && p.grade <= 4 && typeof restStars === 'function' ? `
+      <button class="mode-card m-rest" id="rest">
+        <span class="emoji">🧩</span>
+        <span class="title">Teilen mit Rest</span>
+        <span class="desc">z. B. 17 : 5 = 3 Rest 2 · <span class="rstars">${'★'.repeat(restStars(p))}<span class="off">${'★'.repeat(3 - restStars(p))}</span></span></span>
+      </button>` : ''}
     </div>
 
     <div class="panel">
@@ -187,6 +193,8 @@ screens.mult = () => {
   node.getElementById('back').addEventListener('click', () => history.back());
   startBtn.addEventListener('click', () => { persist(); go('multPlay', { profileId: p.id, mode: 'rows' }); });
   node.getElementById('mix').addEventListener('click', () => { persist(); go('multPlay', { profileId: p.id, mode: 'mix' }); });
+  const restBtn = node.getElementById('rest');
+  if (restBtn) restBtn.addEventListener('click', () => { persist(); go('restPlay', { profileId: p.id }); });
   node.getElementById('blitz').addEventListener('click', () => { persist(); go('multPlay', { profileId: p.id, mode: 'blitz' }); });
   return node;
 };
@@ -402,7 +410,7 @@ screens.multDone = () => {
     </div>`);
   node.getElementById('menu').addEventListener('click', () => history.back());
   node.getElementById('again').addEventListener('click', () => {
-    state.screen = 'multPlay';
+    state.screen = r.mode === 'rest' ? 'restPlay' : 'multPlay';
     state.params = { profileId: p.id, mode: r.mode };
     history.replaceState({ screen: state.screen, params: state.params }, '');
     render();
