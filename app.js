@@ -276,8 +276,10 @@ screens.home = () => {
         <span class="emoji">🏆</span>
         <span><span class="title">Mein Fortschritt</span><br><span class="desc">Was du schon kannst und deine Abzeichen</span></span>
       </button>
-    </div>`);
+    </div>
+    ${typeof shopSectionHtml === 'function' ? shopSectionHtml(p) : ''}`);
   if (typeof bindChallenge === 'function') bindChallenge(node, p);
+  if (typeof bindShop === 'function') bindShop(node, p);
   node.getElementById('switch').addEventListener('click', () => go('profiles'));
   node.getElementById('edit').addEventListener('click', () => go('editProfile', { profileId: p.id }));
   node.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', () => {
@@ -326,6 +328,7 @@ screens.parents = () => {
       </div>
       <p class="muted small">Eine Runde sind 10 Einmaleins-Aufgaben, 8 Bruch-Aufgaben oder eine Blitzrunde.</p>
     </div>
+    ${typeof shopAdminHtml === 'function' ? shopAdminHtml() : ''}
     <div class="panel">
       <h2>Sicherung</h2>
       <p class="muted small" style="margin-top:0">Der Fortschritt wird nur auf diesem Gerät gespeichert. Mit einer Sicherungsdatei kannst du ihn auf ein neues Gerät umziehen oder vor dem Löschen der Browserdaten retten.</p>
@@ -365,6 +368,7 @@ screens.parents = () => {
   const spTest = node.getElementById('sp-test');
   if (spTest) spTest.addEventListener('click', () => speakText(textToSpeech('Hallo! Wie viel ist 7 · 8? Und was ist 3/4 + 1/8?')));
   node.getElementById('sound').addEventListener('change', (e) => { state.data.settings.sound = e.target.checked; save(); });
+  if (typeof bindShopAdmin === 'function') bindShopAdmin(node);
   node.getElementById('export').addEventListener('click', exportBackup);
   const fileEl = node.getElementById('file');
   node.getElementById('import').addEventListener('click', () => fileEl.click());
