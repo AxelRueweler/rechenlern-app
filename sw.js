@@ -1,6 +1,6 @@
 // Service Worker: macht die App offline nutzbar.
 // Bei jeder Änderung an den Dateien VERSION erhöhen, damit Geräte das Update laden.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = 'rechenheld-' + VERSION;
 const FILES = [
   './',
@@ -8,6 +8,7 @@ const FILES = [
   'styles.css',
   'app.js',
   'mult.js',
+  'frac.js',
   'manifest.webmanifest',
   'icons/icon-192.png',
   'icons/icon-512.png',

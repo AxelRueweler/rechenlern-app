@@ -9,7 +9,8 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Einmaleins: Reihen üben, „Mix“ (schwierige Aufgaben kommen öfter), 60-Sekunden-Blitzrunde, optional Geteilt-Aufgaben
 - Sterne, Serien und Abzeichen
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
-- Geplant: Bruchrechnung, Fortschrittsübersicht
+- Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
+- Geplant: Fortschrittsübersicht
 
 ## Auf dem Tablet installieren
 
@@ -26,6 +27,7 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `index.html` | Einstiegsseite |
 | `app.js` | Profile, Speichern, Navigation, Eltern-Bereich |
 | `mult.js` | Einmaleins-Modul |
+| `frac.js` | Bruchrechnen-Modul |
 | `styles.css` | Gestaltung (hell/dunkel, Touch-optimiert) |
 | `sw.js` | Offline-Unterstützung (bei Änderungen `VERSION` erhöhen) |
 | `manifest.webmanifest` | App-Name und Icons für den Startbildschirm |

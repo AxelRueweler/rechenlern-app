@@ -240,9 +240,8 @@ screens.home = () => {
         <span><span class="title">Einmaleins</span><br><span class="desc">${typeof masteredCount === 'function' ? masteredCount(p) : 0} von 100 Aufgaben gemeistert</span></span>
       </button>
       <button class="tile t-frac" data-go="frac">
-        <span class="badge-soon">Kommt bald</span>
         <span class="emoji">🍕</span>
-        <span><span class="title">Brüche</span><br><span class="desc">${p.grade >= 5 ? 'Kürzen, erweitern, rechnen mit Brüchen' : 'Brüche erkennen und vergleichen'}</span></span>
+        <span><span class="title">Brüche</span><br><span class="desc">${p.grade >= 5 ? 'Kürzen, erweitern, rechnen mit Brüchen' : 'Brüche erkennen und vergleichen'}${typeof fracStarsTotal === 'function' ? ` · ★ ${fracStarsTotal(p)} von 27` : ''}</span></span>
       </button>
       <button class="tile t-prog" data-go="progress">
         <span class="badge-soon">Kommt bald</span>
