@@ -1,6 +1,6 @@
 // Service Worker: macht die App offline nutzbar.
 // Bei jeder Änderung an den Dateien VERSION erhöhen, damit Geräte das Update laden.
-const VERSION = 'v14';
+const VERSION = 'v15';
 const CACHE = 'rechenheld-' + VERSION;
 const FILES = [
   './',
@@ -33,10 +33,17 @@ self.addEventListener('activate', (e) => {
 });
 
 // Erst Netz versuchen (damit Updates schnell ankommen), sonst Cache.
+// Eigene Dateien immer beim Server nachfragen (nicht aus dem HTTP-Cache), damit nach einem Update
+// nie alte und neue Dateien gemischt werden.
+function fresh(req) {
+  if (new URL(req.url).origin !== self.location.origin) return req;
+  return req.mode === 'navigate' ? new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' }) : new Request(req, { cache: 'no-cache' });
+}
+
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request)
+    fetch(fresh(e.request))
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy));

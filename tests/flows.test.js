@@ -189,3 +189,16 @@ for (const device of ['Galaxy S9+', 'Galaxy Tab S9', 'Galaxy Tab S9 landscape'])
     await page.closeAll();
   });
 }
+
+test('Fehler beim Anzeigen: App lädt einmal frisch und zeigt sonst einen Neu-laden-Knopf', async () => {
+  const page = await openApp(env, { ...TABLET, data: appData([profile()]) });
+  await page.evaluate(() => { screens.kaputt = () => { throw new Error('test'); }; go('kaputt'); });
+  await page.waitForLoadState('load');
+  await page.waitForSelector('#app *');
+  // Nach dem automatischen Neuladen noch einmal kaputt: jetzt kommt der Knopf
+  await page.evaluate(() => { screens.kaputt = () => { throw new Error('test'); }; go('kaputt'); });
+  await page.waitForSelector('#fresh');
+  assert.match(await page.locator('#app').innerText(), /Fortschritt bleibt erhalten/);
+  assert.equal((await stored(page)).profiles.length, 1);
+  await page.closeAll();
+});

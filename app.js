@@ -423,13 +423,38 @@ function render() {
   const app = document.getElementById('app');
   const fn = screens[state.screen] || screens.profiles;
   if (typeof stopSpeaking === 'function') stopSpeaking();
-  app.replaceChildren(fn());
+  try {
+    app.replaceChildren(fn());
+  } catch (e) {
+    console.warn('Anzeige fehlgeschlagen', e);
+    showRecovery(app);
+  }
+}
+
+// Passiert z. B., wenn nach einem Update alte und neue Dateien gemischt geladen wurden.
+// Einmal automatisch alles frisch laden, sonst einen Knopf anbieten. Der Fortschritt bleibt erhalten.
+function freshReload() {
+  const clear = 'caches' in window ? caches.keys().then((ks) => Promise.all(ks.map((k) => caches.delete(k)))) : Promise.resolve();
+  clear.catch(() => {}).then(() => location.reload());
+}
+function showRecovery(app) {
+  let tried = false;
+  try { tried = sessionStorage.getItem('rechenheld:reload') === '1'; sessionStorage.setItem('rechenheld:reload', '1'); } catch (e) { tried = true; }
+  if (!tried) return freshReload();
+  app.innerHTML = `
+    <div class="panel" style="text-align:center;margin-top:40px">
+      <h1>Kleiner Moment 🔧</h1>
+      <p class="sub">Die App wurde gerade aktualisiert. Tippe auf den Knopf, dann geht es weiter. Dein Fortschritt bleibt erhalten.</p>
+      <div class="actions"><button class="btn" id="fresh">Neu laden</button></div>
+    </div>`;
+  app.querySelector('#fresh').addEventListener('click', freshReload);
 }
 
 /* ---------- Start ---------- */
 
 // Erst starten, wenn alle Module (Einmaleins, Brüche, Fortschritt) geladen sind
 function start() {
+  try { setTimeout(() => sessionStorage.removeItem('rechenheld:reload'), 5000); } catch (e) { /* egal */ }
   history.replaceState({ screen: 'profiles', params: {} }, '');
   // Zuletzt benutztes Profil direkt öffnen
   const last = state.data.profiles.find((p) => p.id === state.data.lastProfileId);
