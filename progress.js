@@ -29,8 +29,12 @@ function currentStreak(p) {
 function todayDone(p) { return dayInfo(p, todayKey()).met; }
 
 /* Wird am Ende jeder fertigen Runde aufgerufen (Einmaleins und Brüche) */
-function finishRound(p, stars) {
+function finishRound(p, stars, info = {}) {
+  const starsBefore = p.stars;
   addStars(p, stars);
+  // Tagesaufgabe prüfen (Bonussterne)
+  const challenge = typeof checkChallenge === 'function' ? checkChallenge(p, info) : null;
+  if (challenge) { addStars(p, challenge.bonus); stars += challenge.bonus; }
   p.days = p.days || {};
   const key = todayKey();
   const d = p.days[key] || (p.days[key] = { rounds: 0, stars: 0, met: false });
@@ -53,7 +57,9 @@ function finishRound(p, stars) {
     if (streak >= 14) badges.push(award(p, 'days14'));
     if (streak >= 30) badges.push(award(p, 'days30'));
   }
-  return { goalJustReached, streak, rounds: d.rounds, goal: dailyGoal(), met: d.met, badges: badges.filter(Boolean) };
+  if (challenge) badges.push(award(p, 'challenge1'));
+  const unlocked = typeof newlyUnlocked === 'function' ? newlyUnlocked(starsBefore, p.stars) : [];
+  return { goalJustReached, streak, rounds: d.rounds, goal: dailyGoal(), met: d.met, challenge, unlocked, badges: badges.filter(Boolean) };
 }
 
 Object.assign(BADGES, {
@@ -104,14 +110,18 @@ function streakCardHtml(p) {
 
 function dayBannerHtml(day) {
   if (!day) return '';
+  let html = '';
+  if (day.challenge) html += `<div class="day-banner win">🎯 Tagesaufgabe geschafft! <b>+${day.challenge.bonus} ⭐</b> Bonus</div>`;
   if (day.goalJustReached) {
-    return `<div class="day-banner win">🔥 Tagesziel geschafft! <b>${day.streak === 1 ? '1 Tag' : day.streak + ' Tage'}</b> in Folge.</div>`;
-  }
-  if (!day.met) {
+    html += `<div class="day-banner win">🔥 Tagesziel geschafft! <b>${day.streak === 1 ? '1 Tag' : day.streak + ' Tage'}</b> in Folge.</div>`;
+  } else if (!day.met) {
     const left = day.goal - day.rounds;
-    return `<div class="day-banner">Noch <b>${left} ${left === 1 ? 'Runde' : 'Runden'}</b> bis zum Tagesziel.</div>`;
+    html += `<div class="day-banner">Noch <b>${left} ${left === 1 ? 'Runde' : 'Runden'}</b> bis zum Tagesziel.</div>`;
   }
-  return '';
+  if (day.unlocked && day.unlocked.length) {
+    html += `<div class="day-banner win">🎁 Neuer Avatar freigeschaltet: <span class="unl">${day.unlocked.join(' ')}</span> <span class="small muted">(✏️ im Profil)</span></div>`;
+  }
+  return html;
 }
 
 /* ---------- Fortschritts-Seite ---------- */
@@ -191,6 +201,8 @@ screens.progress = () => {
       <h2>Brüche (Klasse ${p.grade})</h2>
       ${fracRows}
     </div>
+
+    ${typeof rewardPanelHtml === 'function' ? rewardPanelHtml(p) : ''}
 
     <div class="panel">
       <div class="row-head"><h2 style="margin:0">Abzeichen</h2><span class="muted small">${p.badges.filter((id) => BADGES[id]).length} von ${Object.keys(BADGES).length}</span></div>

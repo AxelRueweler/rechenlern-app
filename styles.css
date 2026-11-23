@@ -439,3 +439,30 @@ input.text:focus { outline: none; border-color: var(--primary); }
 }
 .speak-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
 .question-card.has-speaker { padding-top: 40px; }
+
+/* ---------- Klasse 6 ---------- */
+.mixed { display: inline-flex; align-items: center; gap: .08em; vertical-align: middle; font-weight: 900; }
+.mixed .mw { font-size: 1.35em; line-height: 1; }
+.mixed.big .mw { font-size: clamp(56px, 9vw, 86px); }
+.dec.big { font-size: clamp(48px, 8vw, 72px); font-weight: 900; font-variant-numeric: tabular-nums; }
+.fprompt b { font-size: 1.4em; font-variant-numeric: tabular-nums; }
+.choice-btn .mixed .mw { font-size: 1.2em; }
+
+/* ---------- Tagesaufgabe & Belohnungen ---------- */
+.challenge {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: color-mix(in srgb, var(--accent) 16%, var(--card)); border: 3px dashed var(--accent);
+  border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px;
+}
+.challenge.done { border-style: solid; border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--card)); }
+.challenge .cicon { font-size: 44px; flex: none; }
+.challenge .cbody { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 2px; }
+.challenge .cbody b { font-size: 22px; }
+.choice.locked { position: relative; opacity: .45; filter: grayscale(1); cursor: not-allowed; }
+.choice .lock { position: absolute; bottom: 2px; left: 0; right: 0; font-size: 11px; font-weight: 800; color: var(--ink); filter: none; }
+.reward-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); margin-bottom: 8px; }
+.rslot { background: var(--bg); border-radius: 14px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 14px; font-weight: 800; color: var(--muted); }
+.rslot span { font-size: 36px; filter: grayscale(1); opacity: .45; }
+.rslot.has { background: color-mix(in srgb, var(--accent) 18%, var(--card)); color: var(--ink); }
+.rslot.has span { filter: none; opacity: 1; }
+.day-banner .unl { font-size: 30px; vertical-align: middle; }

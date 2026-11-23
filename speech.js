@@ -100,6 +100,10 @@ function textToSpeech(t) {
 function elementToSpeech(el) {
   if (!el) return '';
   const c = el.cloneNode(true);
+  c.querySelectorAll('.mixed').forEach((m) => {
+    const w = m.querySelector('.mw'), n = m.querySelector('.fn'), d = m.querySelector('.fd');
+    m.replaceWith(' ' + (w ? w.textContent : '') + ' und ' + fracWords(n ? n.textContent : '', d ? d.textContent : '') + ' ');
+  });
   c.querySelectorAll('.frac').forEach((f) => {
     const n = f.querySelector('.fn'), d = f.querySelector('.fd');
     f.replaceWith(' ' + fracWords(n ? n.textContent : '', d ? d.textContent : '') + ' ');

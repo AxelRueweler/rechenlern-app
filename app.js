@@ -189,6 +189,9 @@ screens.editProfile = () => {
       <label class="field">Such dir ein Tier aus</label>
       <div class="choice-grid" id="avatars">
         ${AVATARS.map((a) => `<button class="choice" data-a="${a}" aria-pressed="${a === draft.avatar}">${a}</button>`).join('')}
+        ${typeof REWARD_AVATARS !== 'undefined' ? REWARD_AVATARS.map(([t, a]) => isUnlocked(existing, a)
+          ? `<button class="choice" data-a="${a}" aria-pressed="${a === draft.avatar}">${a}</button>`
+          : `<button class="choice locked" disabled aria-label="Gesperrt bis ${t} Sterne">${a}<span class="lock">🔒 ${t}</span></button>`).join('') : ''}
       </div>
     </div>
     <div class="panel">
@@ -259,6 +262,7 @@ screens.home = () => {
       </div>
     </div>
     ${typeof streakCardHtml === 'function' ? streakCardHtml(p) : ''}
+    ${typeof challengeCardHtml === 'function' ? challengeCardHtml(p) : ''}
     <div class="tiles">
       <button class="tile t-1x1" data-go="mult">
         <span class="emoji">✖️</span>
@@ -273,6 +277,7 @@ screens.home = () => {
         <span><span class="title">Mein Fortschritt</span><br><span class="desc">Was du schon kannst und deine Abzeichen</span></span>
       </button>
     </div>`);
+  if (typeof bindChallenge === 'function') bindChallenge(node, p);
   node.getElementById('switch').addEventListener('click', () => go('profiles'));
   node.getElementById('edit').addEventListener('click', () => go('editProfile', { profileId: p.id }));
   node.querySelectorAll('.tile').forEach((t) => t.addEventListener('click', () => {

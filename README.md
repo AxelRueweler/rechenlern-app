@@ -11,7 +11,8 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Vorlesen: 🔊-Knopf bei jeder Aufgabe, optional automatisch, Lösung bei Fehlern (Einstellungen im Eltern-Bereich)
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
 - Teilen mit Rest (ab Klasse 3), z. B. 17 : 5 = 3 Rest 2, mit Erklärung bei Fehlern
-- Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
+- Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal, teilen, gemischte Zahlen, Dezimalzahlen) mit Erklärung bei Fehlern
+- Tagesaufgabe mit Bonussternen und neue Avatare als Belohnung für gesammelte Sterne
 - Tagesziel (im Eltern-Bereich einstellbar) und Tages-Streak mit Wochenleiste
 - Fortschrittsseite: Kalender der letzten 4 Wochen, Einmaleins-Tafel, Bruch-Themen, alle Abzeichen
 
@@ -33,6 +34,7 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `rest.js` | Teilen mit Rest |
 | `frac.js` | Bruchrechnen-Modul |
 | `progress.js` | Tagesziel, Streak und Fortschrittsseite |
+| `rewards.js` | Tagesaufgabe und Avatar-Belohnungen |
 | `speech.js` | Sprachausgabe (Vorlesen der Aufgaben) |
 | `styles.css` | Gestaltung (hell/dunkel, Touch-optimiert) |
 | `sw.js` | Offline-Unterstützung (bei Änderungen `VERSION` erhöhen) |

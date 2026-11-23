@@ -58,7 +58,10 @@ const FRAC_TOPICS = [
   { id: 'kuerzen', track: 'adv', icon: '✂️', name: 'Kürzen', how: 'Zähler und Nenner durch dieselbe Zahl teilen, bis es nicht mehr geht.' },
   { id: 'vergleichen2', track: 'adv', icon: '🔢', name: 'Vergleichen ohne Bild', how: 'Bring beide Brüche auf den gleichen Nenner, dann vergleiche die Zähler.' },
   { id: 'plusminus', track: 'adv', icon: '🧮', name: 'Plus und Minus', how: 'Erst auf einen gemeinsamen Nenner bringen, dann die Zähler rechnen.' },
-  { id: 'mal', track: 'adv', icon: '✖️', name: 'Mal nehmen', how: 'Zähler mal Zähler, Nenner mal Nenner. Danach kürzen.' }
+  { id: 'mal', track: 'adv', icon: '✖️', name: 'Mal nehmen', how: 'Zähler mal Zähler, Nenner mal Nenner. Danach kürzen.' },
+  { id: 'geteilt', track: 'adv', icon: '➗', name: 'Brüche teilen', how: 'Mit dem Kehrwert malnehmen: bei der zweiten Zahl Zähler und Nenner tauschen.' },
+  { id: 'gemischt', track: 'adv', icon: '🔄', name: 'Gemischte Zahlen', how: 'Ganze mal Nenner plus Zähler ergibt den neuen Zähler.' },
+  { id: 'dezimal', track: 'adv', icon: '🔟', name: 'Dezimalzahlen', how: 'Brüche mit Nenner 10, 100 oder 1000 als Kommazahl schreiben.' }
 ];
 
 /* ---------- Aufgaben-Generatoren ----------
@@ -262,6 +265,128 @@ GEN.mal = () => {
     check: fractionAnswerCheck(a * c, b * d),
     solution: fr(...reduce(a * c, b * d)),
     explain: `Zähler: ${a} · ${c} = ${a * c}, Nenner: ${b} · ${d} = ${b * d}` + (gcd(a * c, b * d) > 1 ? `, gekürzt ${reduce(a * c, b * d).join('/')}.` : '.')
+  };
+};
+
+/* ---------- Klasse 6: Teilen, gemischte Zahlen, Dezimalzahlen ---------- */
+
+function mixed(w, n, d, cls = '') {
+  return `<span class="mixed ${cls}"><span class="mw">${w}</span>${fr(n, d, cls)}</span>`;
+}
+
+GEN.geteilt = () => {
+  const [a, b] = reduce(rnd(1, 5), rnd(6, 9));
+  if (Math.random() < 0.25) {
+    const k = rnd(2, 5);
+    return {
+      prompt: `${fr(a, b, 'big')} <span class="op">:</span> ${k} <span class="op">=</span>`,
+      visual: '',
+      input: 'fraction',
+      check: fractionAnswerCheck(a, b * k),
+      solution: fr(...reduce(a, b * k)),
+      explain: `Durch ${k} teilen heißt: den Nenner mal ${k} nehmen. ${a}/${b} : ${k} = ${a}/${b * k}.`
+    };
+  }
+  const c = rnd(1, 5), d = rnd(c + 1, 9);
+  const [rn, rd] = reduce(a * d, b * c);
+  return {
+    prompt: `${fr(a, b, 'big')} <span class="op">:</span> ${fr(c, d, 'big')} <span class="op">=</span>`,
+    visual: '',
+    input: 'fraction',
+    check: fractionAnswerCheck(a * d, b * c),
+    solution: rd === 1 ? `${rn}` : fr(rn, rd),
+    explain: `Mit dem Kehrwert malnehmen: ${a}/${b} · ${d}/${c} = ${a * d}/${b * c}` + (gcd(a * d, b * c) > 1 ? `, gekürzt ${rn}/${rd}.` : '.')
+  };
+};
+
+GEN.gemischt = () => {
+  const w = rnd(1, 4), d = rnd(2, 8), n = rnd(1, d - 1);
+  const top = w * d + n;
+  if (Math.random() < 0.5) {
+    return {
+      prompt: `Schreibe als Bruch: ${mixed(w, n, d, 'big')} <span class="op">=</span>`,
+      visual: '',
+      input: 'fraction',
+      check: fractionAnswerCheck(top, d),
+      solution: fr(top, d),
+      explain: `${w === 1 ? 'Ein Ganzes ist' : w + ' Ganze sind'} ${w * d}/${d}. Dazu ${n}/${d}: ${w} · ${d} + ${n} = ${top}, also ${top}/${d}.`
+    };
+  }
+  const opts = new Map();
+  const add = (W, N, D) => { if (W >= 1 && N >= 1 && N < D && !opts.has(`${W}|${N}|${D}`)) opts.set(`${W}|${N}|${D}`, [W, N, D]); };
+  add(w, n, d);
+  add(w + 1, n, d); add(w - 1, n, d); add(w, d - n, d); add(Math.floor(top / 10) || w + 1, top % 10 || 1, d); add(w, Math.min(n + 1, d - 1), d); add(w + 1, Math.max(1, n - 1), d);
+  for (let k = 1; opts.size < 4 && k < 20; k++) add(rnd(1, 5), rnd(1, d - 1), d);
+  const list = [[w, n, d], ...shuffle([...opts.values()].slice(1)).slice(0, 3)];
+  return {
+    prompt: `Welche gemischte Zahl ist ${fr(top, d, 'big')}?`,
+    visual: '',
+    input: 'choice',
+    options: shuffle(list).map(([W, N, D]) => ({ html: mixed(W, N, D), value: `${W}|${N}|${D}` })),
+    check: (v) => ({ ok: v === `${w}|${n}|${d}` }),
+    solution: mixed(w, n, d),
+    explain: `${top} : ${d} = ${w} Rest ${n}. Also ${w} Ganze und ${n}/${d}.`
+  };
+};
+
+const DEC_FRACS = [[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 10], [3, 10], [7, 10], [9, 10], [1, 8], [3, 8], [1, 20], [3, 20], [1, 25], [7, 100], [13, 100], [47, 100]];
+const decStr = (x) => String(Math.round(x * 1000) / 1000).replace('.', ',');
+// 0,75 → { num: 75, den: 100 }
+function decParts(x) { const k = (decStr(x).split(',')[1] || '').length; return { num: Math.round(x * 10 ** k), den: 10 ** k }; }
+
+GEN.dezimal = () => {
+  const r = Math.random();
+  if (r < 0.65) {
+    const [a, b] = pick(DEC_FRACS);
+    const val = a / b;
+    const pool = new Set([decStr(val)]);
+    const cand = [decStr(a / 10), `${a},${b}`, `0,${a}${b}`, decStr(b / a / 10), decStr(val + 0.05), decStr(Math.max(0.01, val - 0.05)), decStr(val * 10), `0,${b}`];
+    shuffle(cand).forEach((c) => { if (pool.size < 4 && c !== decStr(val) && !/^0$|^0,0+$/.test(c)) pool.add(c); });
+    while (pool.size < 4) pool.add(decStr(rnd(1, 99) / 100));
+    const toDec = Math.random() < 0.6;
+    if (toDec) {
+      return {
+        prompt: `Welche Dezimalzahl ist ${fr(a, b, 'big')}?`,
+        visual: '',
+        input: 'choice',
+        options: shuffle([...pool]).map((c) => ({ html: c, value: c })),
+        check: (v) => ({ ok: v === decStr(val) }),
+        solution: decStr(val),
+        explain: (() => { const { num, den } = decParts(val); return den === b ? `${a}/${b} sind ${a} ${b === 10 ? 'Zehntel' : 'Hundertstel'}, also ${decStr(val)}.` : `Erweitere auf ${den}: ${a}/${b} = ${num}/${den}, also ${decStr(val)}.`; })()
+      };
+    }
+    // Umgekehrt: Bruch zur Dezimalzahl finden
+    const fpool = new Map([[a + '/' + b, [a, b]]]);
+    shuffle(DEC_FRACS.filter(([x, y]) => x / y !== val)).slice(0, 3).forEach(([x, y]) => fpool.set(x + '/' + y, [x, y]));
+    return {
+      prompt: `Welcher Bruch ist <b>${decStr(val)}</b>?`,
+      visual: '',
+      input: 'choice',
+      options: shuffle([...fpool.values()]).map(([x, y]) => ({ html: fr(x, y), value: x + '/' + y })),
+      check: (v) => { const [x, y] = v.split('/').map(Number); return { ok: sameValue(x, y, a, b) }; },
+      solution: fr(a, b),
+      explain: (() => { const { num, den } = decParts(val); return `${decStr(val)} = ${num}/${den}` + (num !== a ? `, gekürzt ${a}/${b}.` : '.'); })()
+    };
+  }
+  // Dezimalzahlen vergleichen (Falle: mehr Stellen heißt nicht größer)
+  const whole = rnd(0, 2);
+  const x = whole + rnd(1, 9) / 10;
+  let xs = decStr(x), ys, y;
+  if (Math.random() < 0.2) { y = x; ys = xs + '0'; }
+  else { y = Math.round((x + (Math.random() < 0.5 ? -1 : 1) * rnd(1, 9) / 100) * 100) / 100; ys = decStr(y); }
+  if (Math.random() < 0.5) [xs, ys] = [ys, xs];
+  const xv = Number(xs.replace(',', '.')), yv = Number(ys.replace(',', '.'));
+  const correct = xv > yv ? '>' : xv < yv ? '<' : '=';
+  const pad = (s) => { const [i, f = ''] = s.split(','); return i + ',' + f.padEnd(2, '0'); };
+  return {
+    prompt: `<span class="dec big">${xs}</span> <span class="cmp-q">?</span> <span class="dec big">${ys}</span>`,
+    visual: '',
+    input: 'choice',
+    compact: true,
+    options: [{ html: '&gt;', value: '>' }, { html: '=', value: '=' }, { html: '&lt;', value: '<' }],
+    check: (v) => ({ ok: v === correct }),
+    solution: `${xs} ${correct === '>' ? '&gt;' : correct === '<' ? '&lt;' : '='} ${ys}`,
+    explain: `Gleich viele Stellen nach dem Komma machen: ${pad(xs)} und ${pad(ys)}.`
   };
 };
 
@@ -479,7 +604,7 @@ screens.fracPlay = () => {
     st.best = Math.max(st.best || 0, pct);
     const perfect = s.correct === s.done;
     if (perfect) s.stars += 3;
-    const day = finishRound(p, s.stars);
+    const day = finishRound(p, s.stars, { type: 'frac', topic: topic.id, correct: s.correct, total: s.done });
     p.sessions.push({ type: 'frac', topic: topic.id, date: new Date().toISOString(), correct: s.correct, total: s.done, ms: Date.now() - s.start, stars: s.stars });
     if (p.sessions.length > 500) p.sessions = p.sessions.slice(-500);
     p.best = p.best || {};

@@ -319,7 +319,7 @@ screens.multPlay = () => {
     document.removeEventListener('keydown', onKey);
     const perfect = mode !== 'blitz' && s.correct === s.done;
     if (perfect) s.stars += 3;
-    const day = finishRound(p, s.stars);
+    const day = finishRound(p, s.stars, { type: 'mult', mode, correct: s.correct, total: s.done });
     p.sessions.push({ type: 'mult', mode, date: new Date().toISOString(), correct: s.correct, total: s.done, ms: Date.now() - s.start, stars: s.stars });
     if (p.sessions.length > 500) p.sessions = p.sessions.slice(-500);
     p.best = p.best || {};
