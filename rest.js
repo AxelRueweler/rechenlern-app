@@ -49,6 +49,8 @@ screens.restPlay = () => {
     </div>`);
   const els = {};
   ['quit', 'bar', 'streak', 'card', 'task', 'sq', 'sr', 'fb', 'explain', 'input'].forEach((id) => { els[id] = node.getElementById(id); });
+  const restQ = node.querySelector('.rest-q');
+  attachSpeaker(els.card, () => [restQ], ' Mit Rest.');
 
   const padHtml = `
     <div class="pad">
@@ -82,6 +84,7 @@ screens.restPlay = () => {
   }
 
   function next() {
+    if (s.t && !document.body.contains(els.card)) return; // Runde wurde verlassen
     if (s.done >= REST_SESSION_LEN) return finish();
     s.t = makeRestTask(s.t);
     s.val = { q: '', r: '' };
@@ -93,6 +96,7 @@ screens.restPlay = () => {
     els.explain.textContent = '';
     bindPad();
     draw();
+    autoSpeakTask(() => [restQ], ' Mit Rest.');
   }
 
   function press(k) {
@@ -135,6 +139,7 @@ screens.restPlay = () => {
       else if (gq * d > n) hint = `${gq} · ${d} = ${gq * d}, das ist schon mehr als ${n}. `;
       els.fb.textContent = `Richtig ist: ${q} Rest ${r}`;
       els.explain.textContent = hint + `${q} · ${d} = ${q * d}, und ${n} − ${q * d} = ${r}.`;
+      speakMistake([els.fb, els.explain]);
       beep('bad');
       els.input.innerHTML = '<div class="color-actions"><span></span><button class="btn" id="next">Weiter ▶</button></div>';
       els.input.querySelector('#next').addEventListener('click', next);

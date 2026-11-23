@@ -243,6 +243,7 @@ screens.multPlay = () => {
 
   const $ = (id) => node.getElementById(id);
   const qEl = $('q'), ansEl = $('ans'), fbEl = $('fb'), cardEl = $('card'), barEl = $('bar'), streakEl = $('streak');
+  attachSpeaker(cardEl, () => [qEl]);
 
   function updateBar() {
     if (mode === 'blitz') {
@@ -257,6 +258,7 @@ screens.multPlay = () => {
   }
 
   function next() {
+    if (s.q && !document.body.contains(cardEl)) return; // Runde wurde verlassen
     if (mode !== 'blitz' && s.done >= SESSION_LEN && s.retry.length === 0) return finish();
     const due = s.retry.find((r) => r.due <= s.done);
     if (due && mode !== 'blitz') {
@@ -274,6 +276,7 @@ screens.multPlay = () => {
     ansEl.className = 'answer';
     fbEl.textContent = '';
     cardEl.className = 'question-card';
+    if (mode !== 'blitz') autoSpeakTask(() => [qEl]);
   }
 
   function press(k) {
@@ -302,6 +305,7 @@ screens.multPlay = () => {
       cardEl.className = 'question-card bad';
       ansEl.innerHTML = `<s>${esc(s.input)}</s> ${s.q.answer}`;
       fbEl.textContent = 'Fast! Merk dir: ' + s.q.text + ' = ' + s.q.answer;
+      if (mode !== 'blitz') speakMistake([fbEl]);
       beep('bad');
       if (mode !== 'blitz') s.retry.push({ q: s.q, due: s.done + 3 });
     }

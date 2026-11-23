@@ -307,6 +307,14 @@ screens.parents = () => {
         <input type="checkbox" id="sound" ${state.data.settings.sound !== false ? 'checked' : ''}>
         <span>Töne bei richtigen und falschen Antworten</span>
       </label>
+      ${'speechSynthesis' in window ? `
+      <h2 style="margin-top:24px">Vorlesen</h2>
+      <label class="toggle"><input type="checkbox" id="sp-on" ${state.data.settings.speech !== false ? 'checked' : ''}><span>Sprachausgabe (🔊-Knopf bei jeder Aufgabe)</span></label>
+      <label class="toggle"><input type="checkbox" id="sp-auto" ${state.data.settings.speechAuto === true ? 'checked' : ''}><span>Jede Aufgabe automatisch vorlesen</span></label>
+      <label class="toggle"><input type="checkbox" id="sp-mist" ${state.data.settings.speechMistakes !== false ? 'checked' : ''}><span>Bei Fehlern Lösung und Erklärung vorlesen</span></label>
+      <label class="toggle"><input type="checkbox" id="sp-slow" ${state.data.settings.speechSlow === true ? 'checked' : ''}><span>Langsamer sprechen</span></label>
+      <div class="actions" style="justify-content:flex-start"><button class="btn secondary" id="sp-test">🔊 Probe hören</button></div>
+      <p class="muted small">Klingt es falsch oder bleibt es stumm? Auf dem Tablet unter Einstellungen → Allgemeine Verwaltung → Text-in-Sprache die Google-Sprachausgabe mit Deutsch wählen.</p>` : ''}
       <label class="field" style="margin-top:20px">Tagesziel: Runden pro Tag für den Streak</label>
       <div class="choice-grid" id="goal" style="max-width:420px">
         ${[1, 2, 3, 4, 5].map((g) => `<button class="choice text" data-goal="${g}" aria-pressed="${(state.data.settings.dailyGoal || 2) === g}">${g}</button>`).join('')}
@@ -345,6 +353,12 @@ screens.parents = () => {
     b.parentElement.querySelectorAll('.choice').forEach((x) => x.setAttribute('aria-pressed', x === b));
     toast('Tagesziel: ' + b.dataset.goal + (b.dataset.goal === '1' ? ' Runde' : ' Runden'));
   }));
+  [['sp-on', 'speech'], ['sp-auto', 'speechAuto'], ['sp-mist', 'speechMistakes'], ['sp-slow', 'speechSlow']].forEach(([id, key]) => {
+    const el = node.getElementById(id);
+    if (el) el.addEventListener('change', () => { state.data.settings[key] = el.checked; save(); });
+  });
+  const spTest = node.getElementById('sp-test');
+  if (spTest) spTest.addEventListener('click', () => speakText(textToSpeech('Hallo! Wie viel ist 7 · 8? Und was ist 3/4 + 1/8?')));
   node.getElementById('sound').addEventListener('change', (e) => { state.data.settings.sound = e.target.checked; save(); });
   node.getElementById('export').addEventListener('click', exportBackup);
   const fileEl = node.getElementById('file');
@@ -397,6 +411,7 @@ function importBackup(file) {
 function render() {
   const app = document.getElementById('app');
   const fn = screens[state.screen] || screens.profiles;
+  if (typeof stopSpeaking === 'function') stopSpeaking();
   app.replaceChildren(fn());
 }
 

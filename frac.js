@@ -349,6 +349,7 @@ screens.fracPlay = () => {
   const els = {};
   ['quit', 'bar', 'streak', 'card', 'prompt', 'visual', 'answer', 'fb', 'explain', 'input'].forEach((id) => { els[id] = node.getElementById(id); });
   const $ = (id) => els[id];
+  attachSpeaker(els.card, () => [els.prompt]);
 
   function updateBar() {
     $('bar').style.width = (s.done / FRAC_SESSION_LEN * 100) + '%';
@@ -356,6 +357,7 @@ screens.fracPlay = () => {
   }
 
   function next() {
+    if (s.q && !document.body.contains(els.card)) return; // Runde wurde verlassen
     if (s.done >= FRAC_SESSION_LEN) return finish();
     s.q = GEN[topic.id](p.grade);
     s.locked = false;
@@ -366,6 +368,7 @@ screens.fracPlay = () => {
     $('explain').textContent = '';
     $('answer').innerHTML = '';
     buildInput();
+    autoSpeakTask(() => [els.prompt]);
   }
 
   // ---------- Eingabearten ----------
@@ -457,6 +460,7 @@ screens.fracPlay = () => {
       $('card').className = 'question-card bad';
       $('fb').innerHTML = (res.note ? esc(res.note) + ' ' : 'Nicht ganz. ') + 'Richtig ist: ' + s.q.solution;
       $('explain').textContent = s.q.explain;
+      speakMistake([els.fb, els.explain]);
       beep('bad');
       // Bei Fehlern selbst weitertippen, damit die Erklärung gelesen werden kann
       $('input').innerHTML = '<div class="color-actions"><span></span><button class="btn" id="next">Weiter ▶</button></div>';

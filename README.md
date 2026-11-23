@@ -8,6 +8,7 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Profile pro Kind (Name, Tier-Avatar, Klasse)
 - Einmaleins: Reihen üben, „Mix“ (schwierige Aufgaben kommen öfter), 60-Sekunden-Blitzrunde, optional Geteilt-Aufgaben
 - Sterne, Serien und Abzeichen
+- Vorlesen: 🔊-Knopf bei jeder Aufgabe, optional automatisch, Lösung bei Fehlern (Einstellungen im Eltern-Bereich)
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
 - Teilen mit Rest (ab Klasse 3), z. B. 17 : 5 = 3 Rest 2, mit Erklärung bei Fehlern
 - Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
@@ -32,6 +33,7 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `rest.js` | Teilen mit Rest |
 | `frac.js` | Bruchrechnen-Modul |
 | `progress.js` | Tagesziel, Streak und Fortschrittsseite |
+| `speech.js` | Sprachausgabe (Vorlesen der Aufgaben) |
 | `styles.css` | Gestaltung (hell/dunkel, Touch-optimiert) |
 | `sw.js` | Offline-Unterstützung (bei Änderungen `VERSION` erhöhen) |
 | `manifest.webmanifest` | App-Name und Icons für den Startbildschirm |
