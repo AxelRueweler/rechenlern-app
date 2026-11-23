@@ -28,7 +28,7 @@ function nextReward(p) { return REWARD_AVATARS.find(([t]) => p.stars < t) || nul
 
 function challengeList(p) {
   const list = [];
-  const blitzGoal = p.grade >= 5 ? 20 : 12;
+  const blitzGoal = p.grade >= 5 ? 12 : 6;
   list.push({
     id: 'blitz', icon: '⚡', text: `Schaffe in der Blitzrunde mindestens ${blitzGoal} Aufgaben.`,
     start: { screen: 'multPlay', params: { mode: 'blitz' } },
