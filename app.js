@@ -60,6 +60,30 @@ function requestPersistence() {
   }
 }
 
+/* ---------- Sterne: Tageszähler und Gesamtsumme ---------- */
+
+// Lokales Datum (nicht UTC), damit der Tag um Mitternacht wechselt
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Sterne von heute; setzt sich jeden Tag automatisch auf 0 zurück
+function todayStars(p) {
+  return p.today && p.today.date === todayKey() ? p.today.stars : 0;
+}
+
+// Neue Sterne zählen für heute und für die Gesamtsumme (die nie zurückgesetzt wird)
+function addStars(p, n) {
+  if (!p.today || p.today.date !== todayKey()) p.today = { date: todayKey(), stars: 0 };
+  p.today.stars += n;
+  p.stars += n;
+}
+
+function starPill(p) {
+  return `<span class="stars-pill" title="Gesamt: ${p.stars} Sterne">⭐ ${todayStars(p)} heute</span>`;
+}
+
 /* ---------- Zustand & Navigation ---------- */
 
 const state = {
@@ -118,7 +142,7 @@ screens.profiles = () => {
     <button class="profile-card" data-id="${p.id}">
       <span class="avatar">${p.avatar}</span>
       <span class="name">${esc(p.name)}</span>
-      <span class="meta">Klasse ${p.grade} · ⭐ ${p.stars}</span>
+      <span class="meta">Klasse ${p.grade} · ⭐ ${todayStars(p)} heute</span>
     </button>`).join('');
   const node = h(`
     <div class="topbar">
@@ -224,14 +248,14 @@ screens.home = () => {
     <div class="topbar">
       <button class="icon-btn" id="switch" aria-label="Profil wechseln">👥</button>
       <div class="spacer"></div>
-      <span class="stars-pill">⭐ ${p.stars}</span>
+      ${starPill(p)}
       <button class="icon-btn" id="edit" aria-label="Profil ändern">✏️</button>
     </div>
     <div class="hello">
       <span class="avatar">${p.avatar}</span>
       <div>
         <h1 style="margin:0">${greet}, ${esc(p.name)}!</h1>
-        <p class="sub" style="margin:0">Was möchtest du heute üben?</p>
+        <p class="sub" style="margin:0">Was möchtest du heute üben? <span class="total-stars">🏆 ${p.stars} Sterne insgesamt</span></p>
       </div>
     </div>
     <div class="tiles">
@@ -241,7 +265,7 @@ screens.home = () => {
       </button>
       <button class="tile t-frac" data-go="frac">
         <span class="emoji">🍕</span>
-        <span><span class="title">Brüche</span><br><span class="desc">${p.grade >= 5 ? 'Kürzen, erweitern, rechnen mit Brüchen' : 'Brüche erkennen und vergleichen'}${typeof fracStarsTotal === 'function' ? ` · ★ ${fracStarsTotal(p)} von 27` : ''}</span></span>
+        <span><span class="title">Brüche</span><br><span class="desc">${p.grade >= 5 ? 'Kürzen, erweitern, rechnen mit Brüchen' : 'Brüche erkennen und vergleichen'}${typeof fracStarsTotal === 'function' ? ` · ★ ${fracStarsTotal(p)} von ${fracTopicsFor(p).length * 3}` : ''}</span></span>
       </button>
       <button class="tile t-prog" data-go="progress">
         <span class="badge-soon">Kommt bald</span>
@@ -263,7 +287,7 @@ screens.parents = () => {
   const rows = ps.map((p) => `
     <div class="list-row">
       <span style="font-size:40px">${p.avatar}</span>
-      <div class="grow"><b>${esc(p.name)}</b><br><span class="muted small">Klasse ${p.grade} · ⭐ ${p.stars} · seit ${new Date(p.createdAt).toLocaleDateString('de-DE')}</span></div>
+      <div class="grow"><b>${esc(p.name)}</b><br><span class="muted small">Klasse ${p.grade} · ⭐ ${todayStars(p)} heute · ${p.stars} gesamt · seit ${new Date(p.createdAt).toLocaleDateString('de-DE')}</span></div>
       <button class="btn secondary" data-edit="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Ändern</button>
       <button class="btn danger" data-del="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Löschen</button>
     </div>`).join('') || '<p class="muted">Noch keine Profile.</p>';

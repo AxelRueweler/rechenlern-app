@@ -333,3 +333,4 @@ input.text:focus { outline: none; border-color: var(--primary); }
   .topic .thow { font-size: 14px; }
   .cmp-vis { gap: 14px; }
 }
+.total-stars { display: inline-block; margin-left: 8px; font-weight: 800; color: var(--ink); white-space: nowrap; }

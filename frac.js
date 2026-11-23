@@ -274,19 +274,19 @@ function topicStars(p, id) {
   const b = topicStat(p, id).best;
   return b >= 100 ? 3 : b >= 75 ? 2 : b >= 50 ? 1 : 0;
 }
-function fracStarsTotal(p) { return FRAC_TOPICS.reduce((s, t) => s + topicStars(p, t.id), 0); }
+function fracTrack(p) { return p.grade >= 5 ? 'adv' : 'basic'; }
+function fracTopicsFor(p) { return FRAC_TOPICS.filter((t) => t.track === fracTrack(p)); }
+function fracStarsTotal(p) { return fracTopicsFor(p).reduce((s, t) => s + topicStars(p, t.id), 0); }
 
 /* ---------- Themen-Auswahl ---------- */
 
 screens.frac = () => {
   const p = currentProfile();
   if (!p) return screens.profiles();
-  const advFirst = p.grade >= 5;
-  const tracks = [
-    { id: 'basic', name: 'Einstieg', hint: 'Klasse 3 und 4' },
-    { id: 'adv', name: 'Aufbau', hint: 'ab Klasse 5' }
-  ];
-  if (advFirst) tracks.reverse();
+  // Nur die Übungen für die Klasse des Kindes zeigen (Klasse ändern: ✏️ im Profil)
+  const tracks = p.grade >= 5
+    ? [{ id: 'adv', name: 'Brüche für Klasse ' + p.grade, hint: 'Aufbau' }]
+    : [{ id: 'basic', name: 'Brüche für Klasse ' + p.grade, hint: 'Einstieg' }];
 
   const section = (t) => `
     <div class="panel">
@@ -312,7 +312,7 @@ screens.frac = () => {
       <button class="icon-btn" id="back" aria-label="Zurück">⬅️</button>
       <h2 style="margin:0">Brüche</h2>
       <div class="spacer"></div>
-      <span class="stars-pill">⭐ ${p.stars}</span>
+      ${starPill(p)}
     </div>
     ${tracks.map(section).join('')}`);
   node.getElementById('back').addEventListener('click', () => history.back());
@@ -475,7 +475,7 @@ screens.fracPlay = () => {
     st.best = Math.max(st.best || 0, pct);
     const perfect = s.correct === s.done;
     if (perfect) s.stars += 3;
-    p.stars += s.stars;
+    addStars(p, s.stars);
     p.sessions.push({ type: 'frac', topic: topic.id, date: new Date().toISOString(), correct: s.correct, total: s.done, ms: Date.now() - s.start, stars: s.stars });
     if (p.sessions.length > 500) p.sessions = p.sessions.slice(-500);
     p.best = p.best || {};
