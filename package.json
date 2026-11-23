@@ -1,0 +1,13 @@
+{
+  "name": "rechenheld",
+  "private": true,
+  "description": "Rechenlern-App für Einmaleins und Brüche",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:logic": "node --test tests/logic.test.js",
+    "test:flows": "node --test tests/flows.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.50.0"
+  }
+}

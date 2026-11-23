@@ -43,3 +43,21 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `manifest.webmanifest` | App-Name und Icons für den Startbildschirm |
 
 Lokal testen: `python3 -m http.server` im Ordner starten und `http://localhost:8000` öffnen.
+
+## Tests
+
+Die Tests prüfen die Rechenlogik und die wichtigsten Abläufe in einem echten Browser (Chromium über Playwright).
+
+```bash
+npm install          # einmalig, installiert Playwright
+npx playwright install chromium
+npm test             # alle Tests (ca. 1 Minute)
+npm run test:logic   # nur Rechenlogik (wenige Sekunden)
+npm run test:flows   # nur Abläufe und Layout
+```
+
+| Datei | Was wird geprüft |
+|---|---|
+| `tests/logic.test.js` | Einmaleins- und Rest-Aufgaben, alle Bruch-Themen (genau eine richtige Antwort, keine kaputten Texte), Mal-Nehmen in zwei Schritten, Vorlesen, Tagessterne, Streak, Tagesaufgabe, Avatare, Sterne-Konto |
+| `tests/flows.test.js` | Profil anlegen, ganze Runden Einmaleins, Teilen mit Rest und Brüche mal nehmen per Antippen, Belohnung mit PIN einlösen, Themen je Klasse, kein seitliches Überstehen auf Handy und Tablet |
+| `tests/helpers.js` | Kleiner Webserver und Browser-Start |
