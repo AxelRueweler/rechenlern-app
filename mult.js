@@ -149,7 +149,7 @@ screens.mult = () => {
         <span class="title">Blitzrunde</span>
         <span class="desc">${BLITZ_SECONDS} Sekunden. Rekord: <b>${best}</b></span>
       </button>
-      ${p.grade >= 3 && p.grade <= 4 && typeof restStars === 'function' ? `
+      ${p.grade >= 3 && typeof restStars === 'function' ? `
       <button class="mode-card m-rest" id="rest">
         <span class="emoji">🧩</span>
         <span class="title">Teilen mit Rest</span>

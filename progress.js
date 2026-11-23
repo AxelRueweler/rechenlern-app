@@ -183,7 +183,7 @@ screens.progress = () => {
         <div class="row-head"><h2 style="margin:0">Einmaleins</h2><span class="muted small">${masteredCount(p)} von 100 gemeistert</span></div>
         <div class="mgrid">${grid}</div>
         <div class="legend"><span><i class="lg m"></i>sitzt</span><span><i class="lg l"></i>am Lernen</span><span><i class="lg w"></i>noch schwer</span><span><i class="lg u"></i>neu</span></div>
-        ${p.grade >= 3 && p.grade <= 4 && typeof restStat === 'function' ? `<div class="list-row" style="margin-top:12px;border-top:2px solid var(--line)"><span style="font-size:32px">🧩</span><div class="grow"><b>Teilen mit Rest</b><br><span class="muted small">${restStat(p).c} richtig · ${restStat(p).w} falsch</span></div><span class="rstars big">${'★'.repeat(restStars(p))}<span class="off">${'★'.repeat(3 - restStars(p))}</span></span></div>` : ''}
+        ${p.grade >= 3 && typeof restStat === 'function' ? `<div class="list-row" style="margin-top:12px;border-top:2px solid var(--line)"><span style="font-size:32px">🧩</span><div class="grow"><b>Teilen mit Rest</b><br><span class="muted small">${restStat(p).c} richtig · ${restStat(p).w} falsch</span></div><span class="rstars big">${'★'.repeat(restStars(p))}<span class="off">${'★'.repeat(3 - restStars(p))}</span></span></div>` : ''}
       </div>
     </div>
 

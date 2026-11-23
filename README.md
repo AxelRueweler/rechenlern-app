@@ -9,7 +9,7 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Einmaleins: Reihen üben, „Mix“ (schwierige Aufgaben kommen öfter), 60-Sekunden-Blitzrunde, optional Geteilt-Aufgaben
 - Sterne, Serien und Abzeichen
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
-- Teilen mit Rest (Klasse 3 und 4), z. B. 17 : 5 = 3 Rest 2, mit Erklärung bei Fehlern
+- Teilen mit Rest (ab Klasse 3), z. B. 17 : 5 = 3 Rest 2, mit Erklärung bei Fehlern
 - Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
 - Tagesziel (im Eltern-Bereich einstellbar) und Tages-Streak mit Wochenleiste
 - Fortschrittsseite: Kalender der letzten 4 Wochen, Einmaleins-Tafel, Bruch-Themen, alle Abzeichen
