@@ -62,6 +62,8 @@ npm run test:flows   # nur Abläufe und Layout
 | `tests/flows.test.js` | Profil anlegen, ganze Runden Einmaleins, Teilen mit Rest und Brüche mal nehmen per Antippen, Belohnung mit PIN einlösen, Themen je Klasse, kein seitliches Überstehen auf Handy und Tablet |
 | `tests/helpers.js` | Kleiner Webserver und Browser-Start |
 
+Das Speicherformat ist in [docs/DATENMODELL.md](docs/DATENMODELL.md) beschrieben.
+
 ## Android-App (Trusted Web Activity)
 
 Der Ordner `android/` enthält eine kleine Android-Hülle, die die Web-App von GitHub Pages im Vollbild öffnet. Sie erscheint auf dem Tablet als eigene App „Rechenheld“.
