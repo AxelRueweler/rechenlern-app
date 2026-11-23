@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.axelrueweler.rechenheld",
+    "sha256_cert_fingerprints": ["89:7B:C1:9B:09:CD:25:62:46:B4:A0:28:C0:C5:49:D8:EC:0A:EE:47:7B:07:BA:0F:D4:22:F7:71:85:E7:E4:E2"]
+  }
+}]

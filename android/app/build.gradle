@@ -1,0 +1,50 @@
+plugins { id 'com.android.application' }
+
+// Adresse der Web-App. Neue App-Inhalte kommen automatisch über GitHub Pages,
+// die APK muss nur neu gebaut werden, wenn sich hier etwas ändert.
+def appHost = 'axelrueweler.github.io'
+def appUrl = "https://${appHost}/rechenlern-app/"
+
+android {
+    namespace 'io.github.axelrueweler.rechenheld'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'io.github.axelrueweler.rechenheld'
+        minSdk 24
+        targetSdk 35
+        // Versionsnummer kommt aus GitHub Actions (Lauf-Nummer), lokal 1
+        versionCode((System.getenv('VERSION_CODE') ?: '1') as int)
+        versionName "1.0.${System.getenv('VERSION_CODE') ?: '1'}"
+        manifestPlaceholders = [hostName: appHost, launchUrl: appUrl]
+        resValue 'string', 'launchUrl', appUrl
+    }
+
+    signingConfigs {
+        release {
+            def ks = System.getenv('KEYSTORE_FILE')
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias 'rechenheld'
+                keyPassword System.getenv('KEYSTORE_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv('KEYSTORE_FILE')) signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}

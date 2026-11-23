@@ -61,3 +61,12 @@ npm run test:flows   # nur Abläufe und Layout
 | `tests/logic.test.js` | Einmaleins- und Rest-Aufgaben, alle Bruch-Themen (genau eine richtige Antwort, keine kaputten Texte), Mal-Nehmen in zwei Schritten, Vorlesen, Tagessterne, Streak, Tagesaufgabe, Avatare, Sterne-Konto |
 | `tests/flows.test.js` | Profil anlegen, ganze Runden Einmaleins, Teilen mit Rest und Brüche mal nehmen per Antippen, Belohnung mit PIN einlösen, Themen je Klasse, kein seitliches Überstehen auf Handy und Tablet |
 | `tests/helpers.js` | Kleiner Webserver und Browser-Start |
+
+## Android-App (Trusted Web Activity)
+
+Der Ordner `android/` enthält eine kleine Android-Hülle, die die Web-App von GitHub Pages im Vollbild öffnet. Sie erscheint auf dem Tablet als eigene App „Rechenheld“.
+
+- **Neue Funktionen veröffentlichen:** einfach wie bisher auf `main` pushen. Die App lädt die neue Version automatisch, die APK muss nicht neu installiert werden.
+- **APK bauen:** GitHub Actions baut sie bei Änderungen in `android/` (oder per Hand unter Actions → „Android-App bauen“ → Run workflow) und legt sie im Release `android` ab.
+- **Signatur:** Die Secrets `KEYSTORE_BASE64` und `KEYSTORE_PASSWORD` müssen im Repo hinterlegt sein. Immer denselben Schlüssel verwenden, sonst lassen sich Updates nicht installieren.
+- **Vollbild ohne Adressleiste:** Android prüft die Datei `https://axelrueweler.github.io/.well-known/assetlinks.json`. Sie liegt als Vorlage in `android/assetlinks.json` und gehört in das Repo `AxelRueweler.github.io` (Ordner `.well-known/`, dazu eine leere Datei `.nojekyll`). Fehlt sie, läuft die App trotzdem, zeigt aber oben eine Adressleiste.
