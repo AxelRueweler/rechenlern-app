@@ -58,7 +58,7 @@ const FRAC_TOPICS = [
   { id: 'kuerzen', track: 'adv', icon: '✂️', name: 'Kürzen', how: 'Zähler und Nenner durch dieselbe Zahl teilen, bis es nicht mehr geht.' },
   { id: 'vergleichen2', track: 'adv', icon: '🔢', name: 'Vergleichen ohne Bild', how: 'Bring beide Brüche auf den gleichen Nenner, dann vergleiche die Zähler.' },
   { id: 'plusminus', track: 'adv', icon: '🧮', name: 'Plus und Minus', how: 'Erst auf einen gemeinsamen Nenner bringen, dann die Zähler rechnen.' },
-  { id: 'mal', track: 'adv', icon: '✖️', name: 'Mal nehmen', how: 'Zähler mal Zähler, Nenner mal Nenner. Danach kürzen.' },
+  { id: 'mal', track: 'adv', icon: '✖️', name: 'Mal nehmen', how: 'Schritt 1: Zähler mal Zähler, Nenner mal Nenner. Schritt 2: kürzen.' },
   { id: 'geteilt', track: 'adv', icon: '➗', name: 'Brüche teilen', how: 'Mit dem Kehrwert malnehmen: bei der zweiten Zahl Zähler und Nenner tauschen.' },
   { id: 'gemischt', track: 'adv', icon: '🔄', name: 'Gemischte Zahlen', how: 'Ganze mal Nenner plus Zähler ergibt den neuen Zähler.' },
   { id: 'dezimal', track: 'adv', icon: '🔟', name: 'Dezimalzahlen', how: 'Brüche mit Nenner 10, 100 oder 1000 als Kommazahl schreiben.' }
@@ -244,28 +244,49 @@ GEN.plusminus = () => {
   };
 };
 
-GEN.mal = () => {
-  const a = rnd(1, 5), b = rnd(a + 1, 9), c = rnd(1, 5), d = rnd(c + 1, 9);
-  const withWhole = Math.random() < 0.25;
-  if (withWhole) {
-    const k = rnd(2, 5);
-    return {
-      prompt: `${k} <span class="op">·</span> ${fr(a, b, 'big')} <span class="op">=</span>`,
-      visual: '',
-      input: 'fraction',
-      check: fractionAnswerCheck(k * a, b),
-      solution: fr(...reduce(k * a, b)),
-      explain: `Nur der Zähler wird malgenommen: ${k} · ${a} = ${k * a}, also ${k * a}/${b}.`
-    };
-  }
-  return {
-    prompt: `${fr(a, b, 'big')} <span class="op">·</span> ${fr(c, d, 'big')} <span class="op">=</span>`,
+// Zwei Schritte: erst malnehmen (ungekürzt), dann kürzen – wenn es etwas zu kürzen gibt
+function twoStepTask(promptHtml, n, d, explain1) {
+  const [rn, rd] = reduce(n, d);
+  const canReduce = rn !== n;
+  const kuerzen = {
+    prompt: `Jetzt kürzen: ${fr(n, d, 'big')} <span class="op">=</span>`,
     visual: '',
     input: 'fraction',
-    check: fractionAnswerCheck(a * c, b * d),
-    solution: fr(...reduce(a * c, b * d)),
-    explain: `Zähler: ${a} · ${c} = ${a * c}, Nenner: ${b} · ${d} = ${b * d}` + (gcd(a * c, b * d) > 1 ? `, gekürzt ${reduce(a * c, b * d).join('/')}.` : '.')
+    stepLabel: 'Schritt 2 von 2',
+    check: fractionAnswerCheck(rn, rd, { mustReduce: true }),
+    solution: fr(rn, rd),
+    explain: `${n} und ${d} kann man beide durch ${gcd(n, d)} teilen: ${rn}/${rd}.`
   };
+  return {
+    prompt: promptHtml,
+    visual: '',
+    input: 'fraction',
+    stepLabel: canReduce ? 'Schritt 1 von 2' : '',
+    check: ([x, y]) => {
+      if (x === n && y === d) return canReduce ? { ok: true, followUp: kuerzen } : { ok: true };
+      if (canReduce && x === rn && y === rd) return { ok: true, note: 'Schon fertig gekürzt, super!' };
+      return { ok: false };
+    },
+    solution: fr(n, d) + (canReduce ? ' = ' + fr(rn, rd) : ''),
+    explain: explain1 + (canReduce ? ` Danach kürzen: ${rn}/${rd}.` : '')
+  };
+}
+
+GEN.mal = () => {
+  const a = rnd(1, 5), b = rnd(a + 1, 9), c = rnd(1, 5), d = rnd(c + 1, 9);
+  if (Math.random() < 0.25) {
+    const k = rnd(2, 5);
+    return twoStepTask(
+      `${k} <span class="op">·</span> ${fr(a, b, 'big')} <span class="op">=</span>`,
+      k * a, b,
+      `Nur der Zähler wird malgenommen: ${k} · ${a} = ${k * a}, also ${k * a}/${b}.`
+    );
+  }
+  return twoStepTask(
+    `${fr(a, b, 'big')} <span class="op">·</span> ${fr(c, d, 'big')} <span class="op">=</span>`,
+    a * c, b * d,
+    `Zähler: ${a} · ${c} = ${a * c}, Nenner: ${b} · ${d} = ${b * d}, also ${a * c}/${b * d}.`
+  );
 };
 
 /* ---------- Klasse 6: Teilen, gemischte Zahlen, Dezimalzahlen ---------- */
@@ -487,7 +508,7 @@ screens.fracPlay = () => {
     s.q = GEN[topic.id](p.grade);
     s.locked = false;
     $('card').className = 'question-card';
-    $('prompt').innerHTML = s.q.prompt;
+    $('prompt').innerHTML = (s.q.stepLabel ? `<span class="step-label">${s.q.stepLabel}</span>` : '') + s.q.prompt;
     $('visual').innerHTML = s.q.visual || '';
     $('fb').textContent = '';
     $('explain').textContent = '';
@@ -570,6 +591,25 @@ screens.fracPlay = () => {
   function submit(answer) {
     s.locked = true;
     const res = s.q.check(answer);
+    // Erster Schritt richtig: weiter mit Schritt 2 (zählt noch nicht als fertige Aufgabe)
+    if (res.ok && res.followUp) {
+      $('card').className = 'question-card good';
+      $('fb').textContent = 'Richtig! Jetzt noch kürzen ✂️';
+      beep('good');
+      setTimeout(() => {
+        if (!document.body.contains(els.card)) return;
+        s.q = res.followUp;
+        s.locked = false;
+        $('card').className = 'question-card';
+        $('prompt').innerHTML = (s.q.stepLabel ? `<span class="step-label">${s.q.stepLabel}</span>` : '') + s.q.prompt;
+        $('fb').textContent = '';
+        $('explain').textContent = '';
+        $('answer').innerHTML = '';
+        buildInput();
+        autoSpeakTask(() => [els.prompt]);
+      }, 900);
+      return;
+    }
     s.done++;
     const st = p.stats.frac[topic.id] || (p.stats.frac[topic.id] = { c: 0, w: 0, best: 0 });
     if (res.ok) {
