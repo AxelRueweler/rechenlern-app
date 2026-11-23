@@ -10,7 +10,8 @@ Läuft im Browser auf Tablet und Handy, lässt sich zum Startbildschirm hinzufü
 - Sterne, Serien und Abzeichen
 - Fortschritt wird auf dem Gerät gespeichert, Sicherung als Datei im Eltern-Bereich (⚙️)
 - Brüche: Einstieg (erkennen, einfärben, vergleichen, plus) und Aufbau (erweitern, kürzen, vergleichen, plus/minus, mal) mit Erklärung bei Fehlern
-- Geplant: Fortschrittsübersicht
+- Tagesziel (im Eltern-Bereich einstellbar) und Tages-Streak mit Wochenleiste
+- Fortschrittsseite: Kalender der letzten 4 Wochen, Einmaleins-Tafel, Bruch-Themen, alle Abzeichen
 
 ## Auf dem Tablet installieren
 
@@ -28,6 +29,7 @@ Reines HTML, CSS und JavaScript, keine Abhängigkeiten, kein Build-Schritt.
 | `app.js` | Profile, Speichern, Navigation, Eltern-Bereich |
 | `mult.js` | Einmaleins-Modul |
 | `frac.js` | Bruchrechnen-Modul |
+| `progress.js` | Tagesziel, Streak und Fortschrittsseite |
 | `styles.css` | Gestaltung (hell/dunkel, Touch-optimiert) |
 | `sw.js` | Offline-Unterstützung (bei Änderungen `VERSION` erhöhen) |
 | `manifest.webmanifest` | App-Name und Icons für den Startbildschirm |

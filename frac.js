@@ -475,7 +475,7 @@ screens.fracPlay = () => {
     st.best = Math.max(st.best || 0, pct);
     const perfect = s.correct === s.done;
     if (perfect) s.stars += 3;
-    addStars(p, s.stars);
+    const day = finishRound(p, s.stars);
     p.sessions.push({ type: 'frac', topic: topic.id, date: new Date().toISOString(), correct: s.correct, total: s.done, ms: Date.now() - s.start, stars: s.stars });
     if (p.sessions.length > 500) p.sessions = p.sessions.slice(-500);
     p.best = p.best || {};
@@ -489,7 +489,7 @@ screens.fracPlay = () => {
     if (advDone) nb.push(award(p, 'fracAdv'));
     save();
     state.screen = 'fracDone';
-    state.params = { profileId: p.id, topic: topic.id, correct: s.correct, total: s.done, stars: s.stars, perfect, topicStars: topicStars(p, topic.id), newStars: topicStars(p, topic.id) > before, badges: nb.filter(Boolean) };
+    state.params = { profileId: p.id, topic: topic.id, correct: s.correct, total: s.done, stars: s.stars, perfect, topicStars: topicStars(p, topic.id), newStars: topicStars(p, topic.id) > before, day, badges: [...nb, ...day.badges].filter(Boolean) };
     history.replaceState({ screen: state.screen, params: state.params }, '');
     render();
     beep('win');
@@ -527,6 +527,7 @@ screens.fracDone = () => {
       <h1>${title}</h1>
       <p class="sub"><b>${r.correct}</b> von <b>${r.total}</b> richtig bei „${esc(topic.name)}“.</p>
       <div class="earned">+${r.stars} ⭐</div>
+      ${dayBannerHtml(r.day)}
       <p class="topic-stars">${'★'.repeat(r.topicStars)}<span class="off">${'★'.repeat(3 - r.topicStars)}</span>${r.newStars ? '<br><span class="small muted">Neuer Stern für dieses Thema!</span>' : ''}</p>
       ${badges ? `<h2>Neues Abzeichen!</h2><div class="badge-row">${badges}</div>` : ''}
       <div class="actions" style="justify-content:center">

@@ -307,7 +307,7 @@ screens.multPlay = () => {
     document.removeEventListener('keydown', onKey);
     const perfect = mode !== 'blitz' && s.correct === s.done;
     if (perfect) s.stars += 3;
-    addStars(p, s.stars);
+    const day = finishRound(p, s.stars);
     p.sessions.push({ type: 'mult', mode, date: new Date().toISOString(), correct: s.correct, total: s.done, ms: Date.now() - s.start, stars: s.stars });
     if (p.sessions.length > 500) p.sessions = p.sessions.slice(-500);
     p.best = p.best || {};
@@ -328,7 +328,7 @@ screens.multPlay = () => {
     save();
 
     state.screen = 'multDone';
-    state.params = { profileId: p.id, mode, correct: s.correct, total: s.done, stars: s.stars, record, perfect, badges: nb.filter(Boolean) };
+    state.params = { profileId: p.id, mode, correct: s.correct, total: s.done, stars: s.stars, record, perfect, day, badges: [...nb, ...day.badges].filter(Boolean) };
     history.replaceState({ screen: state.screen, params: state.params }, '');
     render();
     beep('win');
@@ -393,6 +393,7 @@ screens.multDone = () => {
       <h1>${title}</h1>
       <p class="sub">${line}</p>
       <div class="earned">+${r.stars} ⭐</div>
+      ${dayBannerHtml(r.day)}
       ${badges ? `<h2>Neues Abzeichen!</h2><div class="badge-row">${badges}</div>` : ''}
       <div class="actions" style="justify-content:center">
         <button class="btn secondary" id="menu">Zur Auswahl</button>

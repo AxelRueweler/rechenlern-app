@@ -334,3 +334,90 @@ input.text:focus { outline: none; border-color: var(--primary); }
   .cmp-vis { gap: 14px; }
 }
 .total-stars { display: inline-block; margin-left: 8px; font-weight: 800; color: var(--ink); white-space: nowrap; }
+
+/* ---------- Fortschritt & Streak ---------- */
+:root { --flame: #ff7a1a; --met: #2bb673; --partial: #ffd166; --none: #e6e2fa; --weak: #ef476f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --none: #33305c; --partial: #c9a227; } }
+:root[data-theme="dark"] { --none: #33305c; --partial: #c9a227; }
+
+.streak-card {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center;
+  background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 20px;
+  border: 3px solid transparent;
+}
+.streak-card.done { border-color: var(--flame); }
+.flame { position: relative; font-size: 64px; line-height: 1; }
+.flame.cold { filter: grayscale(1); opacity: .5; }
+.flame .fnum {
+  position: absolute; right: -8px; bottom: -4px; min-width: 34px; height: 34px; padding: 0 6px; border-radius: 999px;
+  background: var(--flame); color: #fff; font-size: 20px; font-weight: 900; display: grid; place-items: center; border: 3px solid var(--card);
+}
+.sbody { min-width: 0; }
+.stitle { font-size: 26px; font-weight: 900; }
+.smsg { color: var(--muted); font-size: 17px; margin-bottom: 8px; }
+.goalbar { height: 14px; border-radius: 999px; background: var(--none); overflow: hidden; max-width: 360px; }
+.goalbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--flame)); border-radius: 999px; }
+.week { display: flex; gap: 6px; }
+.wday { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40px; }
+.wname { font-size: 14px; font-weight: 800; color: var(--muted); }
+.wdot { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 15px; font-weight: 900; background: var(--none); }
+.wday.met .wdot { background: color-mix(in srgb, var(--flame) 22%, var(--card)); font-size: 20px; }
+.wday.today .wdot { background: var(--card); border: 3px dashed var(--flame); color: var(--flame); }
+.wday.partial .wdot { background: var(--partial); }
+.wday.future .wdot { opacity: .4; }
+@media (max-width: 760px) {
+  .streak-card { grid-template-columns: auto 1fr; }
+  .week { grid-column: 1 / -1; justify-content: space-between; }
+}
+
+.day-banner { display: inline-block; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 10px 22px; font-weight: 700; margin: 0 0 20px; }
+.day-banner.win { background: color-mix(in srgb, var(--flame) 18%, var(--card)); border: 3px solid var(--flame); font-size: 22px; }
+.done .day-banner { display: table; margin-left: auto; margin-right: auto; }
+
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.stat { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.stat .sv { font-size: 36px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.stat .sl { color: var(--muted); font-size: 15px; font-weight: 700; }
+@media (max-width: 640px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+
+.prog-grid { display: grid; gap: 20px; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .prog-grid { grid-template-columns: 1fr 1.25fr; } .prog-grid .panel { margin-bottom: 20px; } }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.ch { text-align: center; font-size: 14px; font-weight: 800; color: var(--muted); }
+.cday { aspect-ratio: 1; max-width: 100%; border-radius: 10px; display: grid; place-items: center; font-size: 15px; font-weight: 800; background: var(--none); color: var(--muted); }
+.cday.met { background: var(--met); color: #fff; }
+.cday.partial { background: var(--partial); color: #3b2f00; }
+.cday.future { background: transparent; opacity: .35; }
+.cday.is-today { outline: 3px solid var(--flame); outline-offset: 1px; }
+.mgrid { display: grid; grid-template-columns: repeat(11, 1fr); gap: 3px; font-variant-numeric: tabular-nums; }
+.mgrid .gh { text-align: center; font-weight: 900; font-size: 14px; color: var(--muted); align-self: center; }
+.mgrid .gc { aspect-ratio: 1; border-radius: 6px; display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.gc.u, .lg.u { background: var(--none); color: var(--muted); }
+.gc.l, .lg.l { background: var(--partial); color: #3b2f00; }
+.gc.m, .lg.m { background: var(--met); color: #fff; }
+.gc.w, .lg.w { background: var(--weak); color: #fff; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 15px; color: var(--muted); font-weight: 700; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lg { display: inline-block; width: 16px; height: 16px; border-radius: 4px; }
+.lg.met { background: var(--met); } .lg.partial { background: var(--partial); } .lg.none { background: var(--none); }
+.rstars.big { color: var(--accent); font-size: 24px; letter-spacing: 2px; }
+.rstars.big .off { color: var(--line); }
+.badge-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+.bslot { background: var(--bg); border-radius: 16px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-weight: 800; font-size: 15px; color: var(--muted); }
+.bslot span { font-size: 40px; filter: grayscale(1); opacity: .5; }
+.bslot.has { color: var(--ink); background: color-mix(in srgb, var(--accent) 18%, var(--card)); }
+.bslot.has span { filter: none; opacity: 1; }
+.hello > div { min-width: 0; }
+@media (max-width: 560px) {
+  .hello .avatar { font-size: 52px; }
+  .hello h1 { font-size: 28px; }
+  .total-stars { display: block; margin-left: 0; white-space: normal; }
+  .streak-card { padding: 16px; gap: 14px; }
+  .flame { font-size: 48px; }
+  .stitle { font-size: 22px; }
+  .week { gap: 4px; }
+  .wday { flex: 1; min-width: 0; width: auto; }
+  .wdot { width: 100%; max-width: 38px; height: auto; aspect-ratio: 1; font-size: 12px; }
+  .mgrid .gc { font-size: 9px; border-radius: 4px; }
+  .mgrid { gap: 2px; }
+}

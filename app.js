@@ -15,7 +15,7 @@ const GRADES = [2, 3, 4, 5, 6, 7];
 /* ---------- Speicher ---------- */
 
 function emptyData() {
-  return { version: 1, profiles: [], lastProfileId: null, settings: { sound: true } };
+  return { version: 1, profiles: [], lastProfileId: null, settings: { sound: true, dailyGoal: 2 } };
 }
 
 function newProfile({ name, avatar, grade }) {
@@ -258,6 +258,7 @@ screens.home = () => {
         <p class="sub" style="margin:0">Was möchtest du heute üben? <span class="total-stars">🏆 ${p.stars} Sterne insgesamt</span></p>
       </div>
     </div>
+    ${typeof streakCardHtml === 'function' ? streakCardHtml(p) : ''}
     <div class="tiles">
       <button class="tile t-1x1" data-go="mult">
         <span class="emoji">✖️</span>
@@ -268,7 +269,6 @@ screens.home = () => {
         <span><span class="title">Brüche</span><br><span class="desc">${p.grade >= 5 ? 'Kürzen, erweitern, rechnen mit Brüchen' : 'Brüche erkennen und vergleichen'}${typeof fracStarsTotal === 'function' ? ` · ★ ${fracStarsTotal(p)} von ${fracTopicsFor(p).length * 3}` : ''}</span></span>
       </button>
       <button class="tile t-prog" data-go="progress">
-        <span class="badge-soon">Kommt bald</span>
         <span class="emoji">🏆</span>
         <span><span class="title">Mein Fortschritt</span><br><span class="desc">Was du schon kannst und deine Abzeichen</span></span>
       </button>
@@ -307,6 +307,11 @@ screens.parents = () => {
         <input type="checkbox" id="sound" ${state.data.settings.sound !== false ? 'checked' : ''}>
         <span>Töne bei richtigen und falschen Antworten</span>
       </label>
+      <label class="field" style="margin-top:20px">Tagesziel: Runden pro Tag für den Streak</label>
+      <div class="choice-grid" id="goal" style="max-width:420px">
+        ${[1, 2, 3, 4, 5].map((g) => `<button class="choice text" data-goal="${g}" aria-pressed="${(state.data.settings.dailyGoal || 2) === g}">${g}</button>`).join('')}
+      </div>
+      <p class="muted small">Eine Runde sind 10 Einmaleins-Aufgaben, 8 Bruch-Aufgaben oder eine Blitzrunde.</p>
     </div>
     <div class="panel">
       <h2>Sicherung</h2>
@@ -333,6 +338,12 @@ screens.parents = () => {
       b.textContent = 'Sicher?';
       setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = 'Löschen'; } }, 3000);
     }
+  }));
+  node.querySelectorAll('[data-goal]').forEach((b) => b.addEventListener('click', () => {
+    state.data.settings.dailyGoal = Number(b.dataset.goal);
+    save();
+    b.parentElement.querySelectorAll('.choice').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    toast('Tagesziel: ' + b.dataset.goal + (b.dataset.goal === '1' ? ' Runde' : ' Runden'));
   }));
   node.getElementById('sound').addEventListener('change', (e) => { state.data.settings.sound = e.target.checked; save(); });
   node.getElementById('export').addEventListener('click', exportBackup);
@@ -391,15 +402,20 @@ function render() {
 
 /* ---------- Start ---------- */
 
-history.replaceState({ screen: 'profiles', params: {} }, '');
-// Wenn es nur ein Profil gibt oder zuletzt eins benutzt wurde, direkt dorthin
-const last = state.data.profiles.find((p) => p.id === state.data.lastProfileId);
-if (last) {
-  state.screen = 'home';
-  state.params = { profileId: last.id };
-  history.pushState({ screen: 'home', params: state.params }, '');
+// Erst starten, wenn alle Module (Einmaleins, Brüche, Fortschritt) geladen sind
+function start() {
+  history.replaceState({ screen: 'profiles', params: {} }, '');
+  // Zuletzt benutztes Profil direkt öffnen
+  const last = state.data.profiles.find((p) => p.id === state.data.lastProfileId);
+  if (last) {
+    state.screen = 'home';
+    state.params = { profileId: last.id };
+    history.pushState({ screen: 'home', params: state.params }, '');
+  }
+  render();
 }
-render();
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+else setTimeout(start, 0);
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
