@@ -503,4 +503,57 @@ input.text:focus { outline: none; border-color: var(--primary); }
   .shop .row-head { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 #pin-set { max-width: 220px; letter-spacing: 6px; }
+/* ---------- Review: Layout-Korrekturen ---------- */
+h1, h2, .stitle, .tile .title { text-wrap: balance; }
+.topbar h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stars-pill { white-space: nowrap; flex: none; }
+.list-row { flex-wrap: wrap; }
+.list-row .grow { min-width: 0; flex: 1 1 180px; }
+.row-actions { display: flex; gap: 10px; margin-left: auto; }
+.topic .rstars { white-space: nowrap; }
+.rows-grid > *, .choice-grid > * { min-width: 0; }
+.panel { min-width: 0; }
+
+/* Sichtbarer Fokus für Tastatur-Bedienung */
+button:focus-visible, input:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+/* Weniger Bewegung, wenn im System gewünscht */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .confetti { display: none; }
+}
+
+/* Tablet quer: Spielfeld nutzt die ganze Höhe, größere Tasten */
+@media (min-width: 820px) and (orientation: landscape) {
+  .play, .fplay { min-height: calc(100vh - 140px); }
+  .play .pad, .fplay .pad { grid-auto-rows: 1fr; }
+  .play .key, .fplay .key { min-height: 0; font-size: 42px; }
+  .question-card { min-height: 0; }
+}
+
+@media (max-width: 560px) {
+  .topbar { gap: 8px; }
+  .topbar .icon-btn { width: 52px; height: 52px; font-size: 24px; flex: none; }
+  .stars-pill { padding: 8px 14px; font-size: 17px; }
+  .topbar h2 { font-size: 22px; }
+  .rows-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .row-btn { padding: 0; }
+  .row-btn .num { font-size: 18px; }
+  .row-btn .rstars { font-size: 11px; }
+  .topic { padding: 12px; gap: 10px; }
+  .topic .ticon { font-size: 30px; }
+  .topic .tname { font-size: 18px; }
+  .topic .rstars { font-size: 16px; letter-spacing: 0; }
+  .question-card.has-speaker { padding-top: 16px; }
+  .speak-btn { position: static; order: -1; align-self: flex-end; width: 50px; height: 50px; font-size: 22px; margin-bottom: -8px; }
+  .row-actions { width: 100%; justify-content: flex-end; }
+  .mode-card { padding: 16px; }
+  .mode-card .emoji { font-size: 42px; }
+  .mode-card .title { font-size: 22px; }
+}
+
+/* Dunkles Design: klarere Kachelfarben */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --tile-1x1: #6b4e0e; --tile-frac: #17543d; --tile-prog: #283f7a; } }
+:root[data-theme="dark"] { --tile-1x1: #6b4e0e; --tile-frac: #17543d; --tile-prog: #283f7a; }
 .step-label { flex-basis: 100%; font-size: 15px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: .06em; }
+.play .key.swap, .fplay .key.swap { font-size: 22px; }

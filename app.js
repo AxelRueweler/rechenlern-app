@@ -295,8 +295,10 @@ screens.parents = () => {
     <div class="list-row">
       <span style="font-size:40px">${p.avatar}</span>
       <div class="grow"><b>${esc(p.name)}</b><br><span class="muted small">Klasse ${p.grade} · ⭐ ${todayStars(p)} heute · ${p.stars} gesamt · seit ${new Date(p.createdAt).toLocaleDateString('de-DE')}</span></div>
-      <button class="btn secondary" data-edit="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Ändern</button>
-      <button class="btn danger" data-del="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Löschen</button>
+      <span class="row-actions">
+        <button class="btn secondary" data-edit="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Ändern</button>
+        <button class="btn danger" data-del="${p.id}" style="min-height:52px;padding:8px 18px;font-size:18px">Löschen</button>
+      </span>
     </div>`).join('') || '<p class="muted">Noch keine Profile.</p>';
 
   const node = h(`
