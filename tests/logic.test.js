@@ -274,3 +274,9 @@ test('Einmaleins: alte getrennte Statistik wird zusammengeführt', async () => {
   assert.deepEqual(r.mult, { '7x8': { c: 5, w: 1, s: 2, t: 9 }, '3x3': { c: 1, w: 0, s: 1, t: 1 } });
   assert.equal(r.m, 1);
 });
+
+test('Sprachausgabe: Vorlesetempo ist 20 % langsamer als früher', async () => {
+  const r = await run(() => ({ normal: speechRate(false), slow: speechRate(true) }));
+  assert.ok(Math.abs(r.normal - 0.76) < 1e-9, `normal: ${r.normal}`); // vorher 0,95
+  assert.ok(Math.abs(r.slow - 0.6) < 1e-9, `langsam: ${r.slow}`);     // vorher 0,75
+});

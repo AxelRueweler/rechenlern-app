@@ -258,10 +258,21 @@ screens.multPlay = () => {
         <button class="key" data-k="0">0</button>
         <button class="key ok" data-k="ok" aria-label="Prüfen">✔</button>
       </div>
+      <div class="next-wrap" id="nextWrap" style="display:none">
+        <button class="btn" id="next">Verstanden, weiter ▶</button>
+      </div>
     </div>`);
 
   const $ = (id) => node.getElementById(id);
   const qEl = $('q'), ansEl = $('ans'), fbEl = $('fb'), cardEl = $('card'), barEl = $('bar'), streakEl = $('streak');
+  const padEl = $('pad'), nextWrap = $('nextWrap');
+  // Nach einem Fehler bleibt die Lösung stehen, bis das Kind selbst auf „Weiter“ tippt
+  function showNext(on) {
+    s.waiting = on;
+    padEl.style.display = on ? 'none' : '';
+    nextWrap.style.display = on ? '' : 'none';
+  }
+  $('next').addEventListener('click', () => { if (s.waiting) { showNext(false); next(); } });
   attachSpeaker(cardEl, () => [qEl]);
 
   function updateBar() {
@@ -299,6 +310,7 @@ screens.multPlay = () => {
   }
 
   function press(k) {
+    if (s.waiting) { if (k === 'ok') $('next').click(); return; }
     if (s.locked) return;
     if (k === 'del') s.input = s.input.slice(0, -1);
     else if (k === 'ok') return check();
@@ -330,7 +342,8 @@ screens.multPlay = () => {
     }
     updateBar();
     save();
-    setTimeout(next, ok ? (mode === 'blitz' ? 350 : 700) : 1900);
+    if (ok) setTimeout(next, mode === 'blitz' ? 350 : 700);
+    else showNext(true);
   }
 
   function finish() {

@@ -61,6 +61,16 @@ test('Einmaleins: falsche Antwort zeigt die Lösung', async () => {
   await tapKeys(page, ['0', 'ok']);
   await page.waitForSelector('.question-card.bad');
   assert.match(await page.locator('#fb').innerText(), new RegExp('Merk dir: ' + q.replace(' =', '').replace(/[·]/g, '.')));
+  // Lösung bleibt stehen, bis das Kind aktiv bestätigt
+  await page.waitForTimeout(2500);
+  assert.equal(await page.locator('.question-card.bad').count(), 1);
+  assert.equal(await page.locator('#q').innerText(), q);
+  assert.equal(await page.locator('#pad').isVisible(), false);
+  await page.locator('#next').click();
+  await page.waitForSelector('.question-card:not(.bad)');
+  assert.equal(await page.locator('#pad').isVisible(), true);
+  assert.equal(await page.locator('#next').isVisible(), false);
+  assert.deepEqual(page.errors, []);
   await page.closeAll();
 });
 
