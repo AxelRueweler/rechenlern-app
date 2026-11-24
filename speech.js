@@ -33,13 +33,17 @@ if (canSpeak) {
 
 function stopSpeaking() { if (canSpeak) speechSynthesis.cancel(); }
 
+// Grundtempo um 20 % gesenkt (Wunsch: langsamer vorlesen); „langsam“ ist noch etwas ruhiger
+const SPEECH_RATE = 0.95 * 0.8, SPEECH_RATE_SLOW = 0.75 * 0.8;
+function speechRate(slow) { return slow ? SPEECH_RATE_SLOW : SPEECH_RATE; }
+
 function speakText(text) {
   if (!canSpeak || !speechSettings().on || !text) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'de-DE';
   if (germanVoice) u.voice = germanVoice;
-  u.rate = speechSettings().slow ? 0.75 : 0.95;
+  u.rate = speechRate(speechSettings().slow);
   u.pitch = 1.05;
   speechSynthesis.speak(u);
 }
